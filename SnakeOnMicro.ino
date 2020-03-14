@@ -103,24 +103,46 @@ void MoveSnake(uint8_t dir)
     //if there is input, use it
     if(dir !=0) currDir = dir;
     
+    if(currDir == UP_CONST && prevDir != DOWN_CONST)
+    {
+        headY--;    //remmeber 0 is up, bigger num is down
+        prevDir = currDir; //movement was successful
+    }
+    else if(currDir == DOWN_CONST && prevDir != UP_CONST)
+    {
+        headY++;    //remember 0 is up, big number down
+        prevDir = currDir;
+    }
+    else if(currDir == LEFT_CONST && prevDir != RIGHT_CONST)
+    {
+        headX--;
+        prevDir = currDir;
+    }
+    else if(currDir == RIGHT_CONST && prevDir != LEFT_CONST) 
+    {
+        headX++;
+        prevDir = currDir;
+    }
+    else    //if there is a contradicting direction (pressing up after going down) just go in the previous direction
+    {
+        if(prevDir == UP_CONST) headY--;
+        if(prevDir == DOWN_CONST) headY++;
+        if(prevDir == LEFT_CONST) headX--;
+        if(prevDir == RIGHT_CONST)headX++;
+    }
 
-    //HEY FUTURE BEN, FUCK YOU IM COMMITING EVEN THO THIS DOESN'T WORK RIGHT
-    if(currDir == UP_CONST && prevDir != DOWN_CONST) headY++;
-    else if(currDir == DOWN_CONST && prevDir != UP_CONST) headY--;
-    else if(currDir == LEFT_CONST && prevDir != RIGHT_CONST) headX--;
-    else if(currDir == RIGHT_CONST && prevDir != LEFT_CONST) headX++;
-
-    prevDir = currDir;
 }
 
 
 //when i work on this next this funciotn will have a toooon more code, this is just to get the snake moving so i can go to bed
 void PrintSnake()
-{
-    grid[headY][headX] = HEAD_PIECE;
+{    
+    if(grid[headY][headX] == EMPTY_SPACE)
+    {
+        grid[headY][headX] = HEAD_PIECE;
+        
+    }
 }
-
-
 
 
 

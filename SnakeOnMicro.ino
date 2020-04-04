@@ -8,6 +8,7 @@ const uint8_t GRID_MAX_Y = 13;
 const char EMPTY_SPACE = '-';
 const char BORDER_PIECE = '#';
 const char HEAD_PIECE = 'S';
+const char SNAKE_BODY = 'X';
 
 //these are the Joystick Analog Pins
 const uint8_t XPIN = 0;
@@ -22,14 +23,18 @@ const uint8_t   LEFT_CONST  = 4;
 const uint8_t   RIGHT_CONST = 6;
 
 
-//these are the starting pos for the snake head, which should be right in the middle of the grid
+//these are the starting positions for the snake head, which should be right in the middle of the grid
 uint8_t headX = GRID_MAX_X/2;
 uint8_t headY = GRID_MAX_Y/2;
+
 
 //rememeber 0, 0 is the upper left corner
 char grid[GRID_MAX_Y][GRID_MAX_X];
 
+uint16_t snakeLength = 3;
 
+int tailX[((GRID_MAX_X)*(GRID_MAX_Y))]; //total area of the grid, can't get any bigger than that youd win or lose first
+int tailY[((GRID_MAX_X)*(GRID_MAX_Y))]; //should be GRID_MAX_X-2 and GRID_MAX_Y-2 but im making it bigger just incase
 
 
 //this function will COMPLETLY wipe the grid, then add borders
@@ -102,7 +107,8 @@ void MoveSnake(uint8_t dir)
     if(dir==0) currDir = prevDir;
     //if there is input, use it
     if(dir !=0) currDir = dir;
-    
+
+
     if(currDir == UP_CONST && prevDir != DOWN_CONST)
     {
         headY--;    //remmeber 0 is up, bigger num is down
@@ -125,22 +131,34 @@ void MoveSnake(uint8_t dir)
     }
     else    //if there is a contradicting direction (pressing up after going down) just go in the previous direction
     {
+        //future ben you need to do something here with the tailX and tailY list and iterating across them maybe idk figure it out youre smart
         if(prevDir == UP_CONST) headY--;
         if(prevDir == DOWN_CONST) headY++;
         if(prevDir == LEFT_CONST) headX--;
         if(prevDir == RIGHT_CONST)headX++;
     }
+    
+    for(uint16_t i = snakeLength; i > 0 ; i--)
+    {
+        //scooch the coords up one since the snake is moving; this makes room for the head in the histroy
+        tailX[i] = tailX[i-1];
+        tailY[i] = tailY[i-1];
+    }
 
+    //these set the snakes head to the 0th position after room has been made
+    tailY[0] = headY;
+    tailX[0] = headX;
 }
 
 
-//when i work on this next this funciotn will have a toooon more code, this is just to get the snake moving so i can go to bed
 void PrintSnake()
 {    
-    if(grid[headY][headX] == EMPTY_SPACE)
+    grid[tailY[0]][tailX[0]] = HEAD_PIECE;
+    
+    //this runs up the list of coords and makes those positions the body to print the snake
+    for(uint8_t i = 1; i < snakeLength; i++)
     {
-        grid[headY][headX] = HEAD_PIECE;
-        
+        grid[tailY[i]][tailX[i]] = SNAKE_BODY;
     }
 }
 
@@ -156,10 +174,25 @@ void setup()
 }
 
 
+
 void loop() 
 {
-    MoveSnake(GetDir());
-    PrintSnake();
-    PrintGrid();
-    delay(1000);
+    bool gameStarted;
+    if(GetDir() != 0)
+    {
+        gameStarted = true;
+    }
+    else
+    {
+        gameStarted = false;
+    }
+    
+    while(gameStarted)//yes its supposed to get stuck here its temp maybe
+    {
+        MoveSnake(GetDir());
+        ClearGrid();
+        PrintSnake();
+        PrintGrid();
+        delay(1000);
+    }
 }

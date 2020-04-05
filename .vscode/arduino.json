@@ -1,5 +1,5 @@
 {
     "board": "arduino:avr:uno",
-    "sketch": "SnakeOnMicro.ino",
+    "sketch": "SnakeOnArduino.ino",
     "port": "COM6"
 }

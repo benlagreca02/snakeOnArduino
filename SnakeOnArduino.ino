@@ -1,6 +1,4 @@
 //Snake on an arduino using the serial monitor
-//i have no idea if im using this uint8_t thingy right
-
 
 //these numbers INCLUDE the borders (i.e. val of 12 will give play-space of 10)
 const uint8_t GRID_MAX_X = 13;
@@ -141,7 +139,6 @@ void MoveSnake(uint8_t dir)
     }
     else    //if there is a contradicting direction (pressing up after going down) just go in the previous direction
     {
-        //future ben you need to do something here with the tailX and tailY list and iterating across them maybe idk figure it out youre smart
         if(prevDir == UP_CONST) headY--;
         if(prevDir == DOWN_CONST) headY++;
         if(prevDir == LEFT_CONST) headX--;
@@ -167,8 +164,6 @@ void MoveSnake(uint8_t dir)
         gameOver = true;
     }
 
-
-
     //these set the snakes head to the 0th position after room has been made
     tailY[0] = headY;
     tailX[0] = headX;
@@ -179,7 +174,7 @@ void WriteSnake()
 {    
     grid[tailY[0]][tailX[0]] = HEAD_PIECE;
     
-    //this runs up the list of coords and makes those positions the body to print the snake
+    //runs up the list of coords and makes those positions the body to print the snake
     for(uint8_t i = 1; i < snakeLength; i++)
     {
         grid[tailY[i]][tailX[i]] = SNAKE_BODY;
@@ -187,7 +182,7 @@ void WriteSnake()
 }
 
 
-//this function places a new apple on the grid by assigning to the variables which are then read in the PrintGrid function
+//function places a new apple on the grid by assigning to the variables which are then read in the PrintGrid function
 void WriteNewApple()
 {
     bool pickingApple = true;
@@ -215,7 +210,8 @@ void setup()
 
     ClearGrid();
     PrintGrid();
-    randomSeed(analogRead(OPEN_ANALOG_PIN)); //picks up noise and uses that noise for the seed for the randomization; this is what arduino website told me
+    //picks up noise and uses that noise for the seed for the randomization, reccomended way to get randomness in code
+    randomSeed(analogRead(OPEN_ANALOG_PIN));
 }
 
 
@@ -233,7 +229,7 @@ void loop()
     }
     
 
-    while(gameStarted && !gameOver)//yes its supposed to get stuck here its temp maybe
+    while(gameStarted && !gameOver)
     {
         delay(1000);
         
